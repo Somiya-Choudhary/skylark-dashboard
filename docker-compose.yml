@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: skylark_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: skylark_user
+      POSTGRES_PASSWORD: skylark_pass
+      POSTGRES_DB: skylark_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
