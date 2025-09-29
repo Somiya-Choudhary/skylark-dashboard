@@ -14,10 +14,12 @@
     "@hono/node-server": "^1.19.4",
     "@prisma/client": "^6.16.2",
     "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.2",
     "hono": "^4.9.9",
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "prisma": "^6.16.2"
   }
 }

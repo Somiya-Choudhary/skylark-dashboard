@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String   // Store hashed password
+  email     String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cameras   Camera[]
+  
+  @@map("users")
+}
+
+
+model Camera {
+  id                    String   @id @default(uuid())
+  userId                String
+  name                  String
+  rtspUrl               String   // Consider encrypting this
+  location              String
+  isEnabled             Boolean  @default(true)
+  isStreaming           Boolean  @default(false)
+  faceDetectionEnabled  Boolean  @default(true)
+  fps                   Int      @default(30)
+  webrtcStreamId        String?  // MediaMTX stream identifier
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alerts                Alert[]
+  stats                 CameraStats?
+  videoContent          VideoContent[]
+  
+  @@index([userId])
+  @@map("cameras")
+}
+
+model Alert {
+  id             String   @id @default(uuid())
+  cameraId       String
+  detectionType  String   @default("face")
+  confidence     Float?
+  timestamp      DateTime @default(now())
+  frameUrl       String?  // URL to snapshot in object storage
+  frameData      Bytes?   // Store actual image data (for small snapshots)
+  metadata       Json?    // Bounding box coordinates, face count, etc.
+  createdAt      DateTime @default(now())
+  
+  camera         Camera   @relation(fields: [cameraId], references: [id], onDelete: Cascade)
+  
+  @@index([cameraId, timestamp])
+  @@index([timestamp])
+  @@map("alerts")
+}
+
+model CameraStats {
+  id             String   @id @default(uuid())
+  cameraId       String   @unique
+  currentFps     Float    @default(0)
+  droppedFrames  Int      @default(0)
+  totalDetections Int     @default(0)
+  streamHealth   String   @default("offline") // 'healthy', 'degraded', 'offline'
+  lastHeartbeat  DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  camera         Camera   @relation(fields: [cameraId], references: [id], onDelete: Cascade)
+  
+  @@map("camera_stats")
+}
+
+model VideoContent {
+  id          String   @id @default(uuid())
+  cameraId    String
+  videoUrl    String?  // URL to video in object storage (S3, etc.)
+  videoData   Bytes?   // Store actual video content (WARNING: Can be very large!)
+  duration    Int?     // Duration in seconds
+  fileSize    Int?     // Size in bytes
+  format      String?  // mp4, webm, etc.
+  startTime   DateTime
+  endTime     DateTime
+  createdAt   DateTime @default(now())
+  
+  camera      Camera   @relation(fields: [cameraId], references: [id], onDelete: Cascade)
+  
+  @@index([cameraId, startTime])
+  @@map("video_content")
+}
