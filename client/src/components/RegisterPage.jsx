@@ -7,12 +7,12 @@ export default function RegisterPage() {
   return (
     <div style={styles.container}>
       <h2>Register</h2>
-      <form onSubmit={(e) => handleSubmit(e, "http://localhost:3000/register")} style={styles.form}>
+      <form onSubmit={(e) => handleSubmit(e, "http://localhost:3000/auth/register")} style={styles.form}>
         <input
           type="text"
-          name="name"
-          placeholder="Full Name"
-          value={userData.name || ""}
+          name="username"
+          placeholder="Username"
+          value={userData.username || ""}
           onChange={handleChange}
           required
           style={styles.input}

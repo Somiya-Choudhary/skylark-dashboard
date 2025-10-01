@@ -1,5 +1,6 @@
 import { verifyAccessToken } from '../utils/jwt.mjs';
 
+
 export function authMiddleware() {
   return async (c, next) => {
     const authHeader = c.req.header('authorization'); // small helper
@@ -9,7 +10,6 @@ export function authMiddleware() {
 
     const token = authHeader.split(' ')[1];
     const payload = verifyAccessToken(token);
-    console.log("**payload:", payload);
 
     if (!payload) {
       return c.json({ error: 'Invalid or expired token' }, 401);

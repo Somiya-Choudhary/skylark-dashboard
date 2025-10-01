@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
+import { useSelector } from "react-redux";
+// import { setUser } from '../redux/actions';
+import { useAuthCheck } from '../hooks/useAuthCheck';
 
 const Dashboard = () => {
+  const { user } = useSelector(state => state.user);
+  // This will check auth on mount and refresh
+  useAuthCheck();
+  console.log(" user data",user)
+
+  // const dispatch = useDispatch();
+
   const [cameras, setCameras] = useState([
     {
       id: 1,
@@ -16,6 +26,35 @@ const Dashboard = () => {
     rtspUrl: '',
     location: ''
   });
+
+
+
+  // useEffect(() => {
+
+  //   fetch("http://localhost:3000/api/user", {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Authorization": `Bearer ${accessToken}`,
+  //     },
+  //     credentials: "include"
+  //   })
+  //     .then(response => {
+  //       if (!response.ok) throw new Error("Network response was not ok");
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       console.log("User data:", data);
+  //       dispatch(setUser({
+  //         user: data.user,
+  //         accessToken: accessToken
+  //       }));
+  //     })
+  //     .catch(err => {
+  //       console.log("Error fetching user:", err);
+  //     });
+  // }, []);
+
 
   const handleAddCamera = (e) => {
     e.preventDefault();
@@ -56,12 +95,31 @@ const Dashboard = () => {
       boxSizing: 'border-box',
       margin: 0
     },
+    header: {
+      marginBottom: '30px'
+    },
     title: {
       fontSize: '32px',
       fontWeight: 'bold',
       color: '#111827',
-      marginBottom: '30px',
+      marginBottom: '15px',
       textAlign: 'center'
+    },
+    userInfo: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '4px',
+      marginBottom: '20px'
+    },
+    userName: {
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#2563eb'
+    },
+    userEmail: {
+      fontSize: '14px',
+      color: '#6b7280'
     },
     addCameraSection: {
       backgroundColor: 'white',
@@ -212,7 +270,15 @@ const Dashboard = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Camera Dashboard</h1>
+      <div style={styles.header}>
+        <h1 style={styles.title}>Camera Dashboard</h1>
+        {user && (
+          <div style={styles.userInfo}>
+            <span style={styles.userName}>Hello, {user.username}!</span>
+            <span style={styles.userEmail}>{user.email}</span>
+          </div>
+        )}
+      </div>
       
       {/* Add Camera Form */}
       <div style={styles.addCameraSection}>

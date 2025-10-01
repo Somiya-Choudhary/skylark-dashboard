@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <div style={styles.container}>
       <h2>Login</h2>
-      <form onSubmit={(e) => handleSubmit(e, "http://localhost:3000/login")} style={styles.form}>
+      <form onSubmit={(e) => handleSubmit(e, "http://localhost:3000/auth/login")} style={styles.form}>
         <input
           type="email"
           name="email"

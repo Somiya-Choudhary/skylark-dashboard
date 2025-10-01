@@ -1,9 +1,7 @@
 import { setCookie } from 'hono/cookie';
-
 import { prisma } from '../db.mjs';
 import { hashPassword, comparePassword } from '../utils/hash.mjs';
 import { generateTokens } from '../utils/jwt.mjs';
-
 
 
 export async function register(ctx) {
@@ -28,14 +26,12 @@ export async function register(ctx) {
   setCookie(ctx, 'refreshToken', tokens.refreshToken, {
     httpOnly: true,
     sameSite: 'Strict',
-    path: '/auth/refresh',
+    path: '/',
   });
 
   return ctx.json({
     accessToken: tokens.accessToken,
-    user: {
-      email: user.email,
-    },
+    user: user,
   });
 }
 
@@ -57,7 +53,7 @@ export async function login(ctx) {
   setCookie(ctx, 'refreshToken', tokens.refreshToken, {
     httpOnly: true,
     sameSite: 'Strict',
-    path: '/auth/refresh',
+    path: '/',
   });
 
   return ctx.json({
