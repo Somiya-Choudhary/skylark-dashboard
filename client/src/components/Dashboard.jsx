@@ -1,25 +1,16 @@
 import React, { useState } from 'react';
-import { useSelector } from "react-redux";
-// import { setUser } from '../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAuthCheck } from '../hooks/useAuthCheck';
 
 const Dashboard = () => {
-  const { user } = useSelector(state => state.user);
+  const { user, accessToken } = useSelector(state => state.user);
+  const dispatch = useDispatch();
+  const cameras = useSelector(state => state.cameras.cameras);
+
+  console.log("cameras",cameras)
+
   // This will check auth on mount and refresh
   useAuthCheck();
-  console.log(" user data",user)
-
-  // const dispatch = useDispatch();
-
-  const [cameras, setCameras] = useState([
-    {
-      id: 1,
-      name: 'Front Door Camera',
-      rtspUrl: 'rtsp://example.com/stream1',
-      location: 'Front Entrance',
-      status: 'streaming'
-    }
-  ]);
   
   const [newCamera, setNewCamera] = useState({
     name: '',
@@ -27,63 +18,54 @@ const Dashboard = () => {
     location: ''
   });
 
-
-
-  // useEffect(() => {
-
-  //   fetch("http://localhost:3000/api/user", {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "Authorization": `Bearer ${accessToken}`,
-  //     },
-  //     credentials: "include"
-  //   })
-  //     .then(response => {
-  //       if (!response.ok) throw new Error("Network response was not ok");
-  //       return response.json();
-  //     })
-  //     .then(data => {
-  //       console.log("User data:", data);
-  //       dispatch(setUser({
-  //         user: data.user,
-  //         accessToken: accessToken
-  //       }));
-  //     })
-  //     .catch(err => {
-  //       console.log("Error fetching user:", err);
-  //     });
-  // }, []);
-
-
-  const handleAddCamera = (e) => {
+  const handleAddCamera = async (e) => {
     e.preventDefault();
     if (!newCamera.name || !newCamera.rtspUrl) return;
     
-    const camera = {
-      ...newCamera,
-      id: Date.now(),
-      status: 'stopped'
-    };
-    
-    setCameras(prev => [...prev, camera]);
-    setNewCamera({ name: '', rtspUrl: '', location: '' });
+    try {
+      const response = await fetch('http://localhost:3000/api/camera', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({camera: newCamera, user}),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add camera');
+      }
+
+      const addedCamera = await response.json();
+
+      // Dispatch to Redux
+      dispatch({
+        type: 'ADD_CAMERA',
+        payload: { ...addedCamera, status: 'stopped' }
+      });
+      
+      setNewCamera({ name: '', rtspUrl: '', location: '' });
+    } catch (error) {
+      console.error('Error adding camera:', error);
+      alert('Failed to add camera. Please try again.');
+    }
   };
 
   const handleDeleteCamera = (id) => {
-    setCameras(prev => prev.filter(cam => cam.id !== id));
+    // setCameras(prev => prev.filter(cam => cam.id !== id));
   };
 
   const toggleCameraStream = (id) => {
-    setCameras(prev => prev.map(cam => {
-      if (cam.id === id) {
-        return {
-          ...cam,
-          status: cam.status === 'streaming' ? 'stopped' : 'streaming'
-        };
-      }
-      return cam;
-    }));
+    // setCameras(prev => prev.map(cam => {
+    //   if (cam.id === id) {
+    //     return {
+    //       ...cam,
+    //       status: cam.status === 'streaming' ? 'stopped' : 'streaming'
+    //     };
+    //   }
+    //   return cam;
+    // }));
   };
 
   const styles = {

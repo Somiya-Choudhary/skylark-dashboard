@@ -25,7 +25,9 @@ export async function register(ctx) {
 
   setCookie(ctx, 'refreshToken', tokens.refreshToken, {
     httpOnly: true,
-    sameSite: 'Strict',
+    // sameSite: 'Strict',
+    sameSite: 'None',
+    secure: true,  
     path: '/',
   });
 
@@ -52,7 +54,9 @@ export async function login(ctx) {
 
   setCookie(ctx, 'refreshToken', tokens.refreshToken, {
     httpOnly: true,
-    sameSite: 'Strict',
+    // sameSite: 'Strict',
+    sameSite: 'None',
+    secure: true, 
     path: '/',
   });
 

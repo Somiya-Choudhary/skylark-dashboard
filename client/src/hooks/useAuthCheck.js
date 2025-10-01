@@ -37,12 +37,15 @@ export const useAuthCheck = () => {
         }
 
         const userData = await userResponse.json();
+        console.log(" user data", userData)
 
         // Update Redux state
         dispatch(setUser({
           user: userData.user,
           accessToken: accessToken
         }));
+
+        dispatch({ type: "SET_CAMERAS", payload: userData.cameras });
 
       } catch (err) {
         console.log("Auth check failed:", err);

@@ -19,7 +19,9 @@ export async function refreshToken(ctx) {
     // Set new refresh token cookie
     setCookie(ctx, 'refreshToken', tokens.refreshToken, {
       httpOnly: true,
-      sameSite: 'Strict',
+      // sameSite: 'Strict',
+      sameSite: 'None',
+      secure: true,  
       path: '/',
     });
     
