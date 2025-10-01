@@ -1,17 +1,31 @@
 import jwt from 'jsonwebtoken';
 
 // Keep this secret safe (or load from .env)
-const SECRET = process.env.JWT_SECRET;
+const ACCESS_SECRET = process.env.ACCESS_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_SECRET;
 
 // Generate token
-export function generateToken(payload, expiresIn = '1h') {
-  return jwt.sign(payload, SECRET, { expiresIn });
+export function generateTokens(payload) {
+  const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: '1m' });
+  const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: '2m' });
+
+  return { accessToken, refreshToken };
+
 }
 
-// Verify token
-export function verifyToken(token) {
+// Verify access token
+export function verifyAccessToken(token) {
   try {
-    return jwt.verify(token, SECRET);
+    return jwt.verify(token, ACCESS_SECRET);
+  } catch (err) {
+    return null;
+  }
+}
+
+// Verify refresh token
+export function verifyRefreshToken(token) {
+  try {
+    return jwt.verify(token, REFRESH_SECRET);
   } catch (err) {
     return null;
   }
