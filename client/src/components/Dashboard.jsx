@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAuthCheck } from '../hooks/useAuthCheck';
+import VideoComponent from './VideoComponent';
 
 const Dashboard = () => {
   const { user, accessToken } = useSelector(state => state.user);
@@ -53,10 +54,12 @@ const Dashboard = () => {
   };
 
   const handleDeleteCamera = (id) => {
+    console.log(id)
     // setCameras(prev => prev.filter(cam => cam.id !== id));
   };
 
   const toggleCameraStream = (id) => {
+    console.log(id)
     // setCameras(prev => prev.map(cam => {
     //   if (cam.id === id) {
     //     return {
@@ -261,6 +264,8 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      <VideoComponent />
       
       {/* Add Camera Form */}
       <div style={styles.addCameraSection}>
